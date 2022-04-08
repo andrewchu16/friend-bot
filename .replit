@@ -1,3 +1,4 @@
-language = "bash"
+language = "python"
+# helo
 run = "python3 main.py"
 
