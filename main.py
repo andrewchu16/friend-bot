@@ -1,0 +1,4 @@
+import friendbot
+
+print("hello")
+
