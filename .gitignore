@@ -3,5 +3,3 @@ data/*
 
 .replit
 consented.json
-poetry.lock
-pyproject.toml
