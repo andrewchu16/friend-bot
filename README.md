@@ -42,7 +42,7 @@ The prefix for Friend Bot is `!`
 | Github | We used git and Github to store our project online. |
 | Python | Python was the main language for this project. |
 | discord.py | Discord. |
-| Cohere API | |
+| Cohere API | Uses Cohere API to generate text from prompts |
 
 ## Challenges we ran into
 

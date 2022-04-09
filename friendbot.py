@@ -155,8 +155,6 @@ class FriendBot(discord.Client):
 
                     
     # Returns true or false depending on whether the function writes successfully
-    
-    
     def write_consented(self, user_id: int = -1) -> bool:
         if user_id != -1:
             if str(user_id) not in self.consented_list.keys():
