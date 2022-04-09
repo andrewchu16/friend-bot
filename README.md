@@ -5,10 +5,9 @@
 Have you ever been up on Discord at night, feeling lonely? ~~This is a common issue that has beening affecting our developers. :)~~
 
 Look no further, for `Friend Bot`! Friend bot is discord bot AI meant to talk like a normal person and respond to your messages! 
-With Friend Bot, you will always have a companion to talk to,
+With Friend Bot, you will always have a companion to talk to, and you'll never be lonely again!
 
 ## TODO
-
 
 1. refactor (optional)
     - variable names
@@ -25,9 +24,9 @@ The prefix for Friend Bot is `!`
 | Command | Description |
 | --- | --- |
 | conversation | Start a conversation with the bot. |
-| consent | |
-| regenerate | Regenerate the bot's last response. |
-| reset | |
+| consent | Consent to use the bot. |
+| regenerate | Regenerate the bot's last response with same cache. |
+| reset | Resets the user's conversation cache. |
 | end | End a conversation with the bot. |
 
 ---
@@ -41,8 +40,8 @@ The prefix for Friend Bot is `!`
 | Replit | Replit was the primary way we collaborated on the project. |
 | Github | We used git and Github to store our project online. |
 | Python | Python was the main language for this project. |
-| discord.py | Discord. |
-| Cohere API | Uses Cohere API to generate text from prompts |
+| discord.py | Discord was used to control the bot. |
+| Cohere API |Cohere API was used to generate text from prompts. |
 
 ## Challenges we ran into
 
@@ -52,6 +51,6 @@ The prefix for Friend Bot is `!`
 
 ## What we learned
 
-## What's next for Friend Bot
+We learned,
 
-!
+**THE MAGIC OF FRIENDSHIP**

@@ -31,8 +31,8 @@ class FriendBot(discord.Client):
         self.consentmessages = dict()
 
         with open(CONSENT_FILE, "r") as cf:
-            self.consented_list = json.load(cf)
-        print(self.consented_list)
+            consented_list = json.load(cf)
+        print(consented_list)
         
     
     # Runs when the bot is fully connected to Discord
@@ -56,7 +56,7 @@ class FriendBot(discord.Client):
         # Prevent bot from responding to itself and other bots
         if user.bot:
             return
-        elif self.user_strikes(str(user.id)) > STRIKES_MAX: 
+        elif self.get_strikes(str(user.id)) > STRIKES_MAX: 
             # ignores anyone banned
             if (text.startswith("!reset") or text.startswith("!consent") or text.startswith("!end") or text.startswith("!conversation")) and random.randint(1,CHANCE_OF_REACTION) == 1:
                 await ctx.send(f"{user.mention}, I'm ignoring rude ppl smh 🙄")
@@ -88,14 +88,32 @@ class FriendBot(discord.Client):
                 await ctx.send("Successfully reset your cache")
                 return
             elif text.startswith("!regenerate"):
-                self.history[user.id].regenerate()
-                await ctx.send("Successfully regenerated")
+                new_msg = self.history[user.id].regenerate()
+                if new_msg == -1:
+                    await ctx.send("The bot hasn't said anything yet ...")
+                else:
+                    await message.delete()
+                    async with ctx.typing():
+                        self.model.create_prompt(user.id, self.history[user.id].export()) 
+
+                        # appropriate means message is appropriate
+                        response, appropriate = self.model.generate_response(user.id)
+
+                    bot_message = await ctx.fetch_message(new_msg[1])
+                    await bot_message.edit(content=user.mention + ", " + response)
+                    self.history[user.id].add(response.strip(), True, bot_message.id)
+
+                    if not appropriate:
+                        # add a strike
+                        self.add_strike(user.id) 
+            
+                    self.last_command = time.time()
                 return
             elif text.startswith("!conversation"):
                 await ctx.send("I'm already conversing with you, try saying something that isn't a command.")
                 return
             elif text.startswith("!end"):
-                self.is_messaging.pop(user)
+                self.is_messaging.remove(user)
                 await ctx.send(f"Ending conversation with {user.name}")
                 return
         elif text.startswith("!conversation"):
@@ -157,19 +175,20 @@ class FriendBot(discord.Client):
     # Returns true or false depending on whether the function writes successfully
     def write_consented(self, user_id: int = -1) -> bool:
         if user_id != -1:
-            if str(user_id) not in self.consented_list.keys():
-                self.consented_list[str(user_id)] = {
+            with open(CONSENT_FILE, "r") as file:
+                consented_list = json.load(file)
+            if str(user_id) not in consented_list:
+                consented_list[str(user_id)] = {
                     "strikes": 0,
                     "last_strike": None
                 }
-        try:
-            with open(CONSENT_FILE, "w") as file:
-                json.dump(self.consented_list, file, indent=4)
-            return True
-        except Exception:
-            return False
-        
-
+            try:
+                with open(CONSENT_FILE, "w") as file:
+                    json.dump(consented_list, file, indent=4)
+                return True
+            except Exception:
+                return False
+        return False
     
     def is_consented(self, user_id: int) -> bool:
         with open(CONSENT_FILE, "r") as cf:
@@ -179,14 +198,18 @@ class FriendBot(discord.Client):
         return False
 
     def add_strike(self, user_id: int) -> None:
+        with open(CONSENT_FILE, "r") as file:
+            consented_list = json.load(file)
         # to be able to converse with the bot, one has to already be in consented_list
-        self.consented_list[str(user_id)]["strikes"] += 1
-        #self.consented_list[str(user_id)]["last_strike"] = datetime.datetime.now()
-        self.write_consented()
+        consented_list[str(user_id)]["strikes"] += 1
+        with open(CONSENT_FILE, "w") as file:
+            json.dump(consented_list, file, indent=4)        
             
     # just returns the number of strikes that they have
-    def user_strikes(self, user_id: int) -> int:
-        if str(user_id) in self.consented_list.keys():
-            return int(self.consented_list[str(user_id)]["strikes"])
+    def get_strikes(self, user_id: int) -> int:
+        with open(CONSENT_FILE, "r") as file:
+            consented_list = json.load(file)
+        if str(user_id) in consented_list:
+            return int(consented_list[str(user_id)]["strikes"])
         else:
             return 0

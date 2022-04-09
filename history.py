@@ -50,9 +50,13 @@ class History():
                 self.user_history.pop(0)
 
     def regenerate(self):
-        # This is run when the bot edits its message, so the id is the same
-        message, message_id = self.bot_history[-1]
-        self.bot_history[-1] = (message, message_id)
+        # This is run when the bot edits its message, so the id is the same    
+        if len(self.bot_history) > 0:
+            message, message_id = self.bot_history[-1]
+            self.bot_history.pop()
+            return (message, message_id)
+        else:
+            return -1
 
     def reset(self):
         self.user_history.clear()
