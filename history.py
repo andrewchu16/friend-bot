@@ -54,7 +54,7 @@ class History():
         message, message_id = self.bot_history[-1]
         self.bot_history[-1] = (message, message_id)
 
-    def reset(self, user: int):
+    def reset(self):
         self.user_history.clear()
-        self.bot_history_clear()
+        self.bot_history.clear()
         # self.last_message.pop(user)

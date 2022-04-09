@@ -13,7 +13,6 @@ With Friend Bot, you will always have a companion to talk to,
 1. refactor (optional)
     - variable names
     - program structure
-1. filter explicit stuff
 1. Finetune the model (optional)
 1. Write the readme
 1. Write the Devpost

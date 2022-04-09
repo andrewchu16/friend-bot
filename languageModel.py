@@ -37,6 +37,9 @@ class Model:
         # print("\n\n", self.prompt[user_id])
     
     def generate_response(self, user_id: int):
+        response = ""
+        appropriate = True
+        
         try: 
             prediction = self.co.generate(
                 model=self.model,
@@ -50,19 +53,22 @@ class Model:
                 stop_sequences=self.stop_seq,
                 return_likelihoods=self.return_likelihoods
             )
-        except cohere.CohereError:
-            # blocked output:
-            response = "So"
-            print(self.prompt[user_id])
+            response = prediction.generations[0].text
 
-        response: str = prediction.generations[0].text
+            # ignores extra output
+            response = response.replace(self.stop_seq[0], '').strip().split('\n')[0]
+        except cohere.CohereError as e:
+            # blocked output
+            print(e.message)
+            if e.message.startswith("blocked output"):
+                response = "That seems pretty rude..."
+                appropriate = False
+                print("Violation occured")
+                # print(self.prompt[user_id])
+            else:
+                response = "An error occured, please try again later."
 
-        # ignores extra output
-        response = response.replace(self.stop_seq[0], '').strip().split('\n')[0]
-        
-        #print("--->", prediction.generations)
-        # print(response)
-        # space is here      vvvv   on purpose
+        # space is here         vvvv   on purpose
         self.prompt[user_id] += f" {response}\n"
         
-        return response
+        return response, appropriate
