@@ -5,7 +5,7 @@ class Model:
     def __init__(self, api_key):
         self.co = cohere.Client(api_key)
         # Model generation variables
-        self.model = 'medium'#-20220328'
+        self.model = 'medium'
         self.num_tokens = 50
         self.temperature = 1.2
         self.top_k = 0
@@ -18,7 +18,7 @@ class Model:
         # stores a prompt for each user using the bot
         self.prompt = dict()
     
-    # converts a discord conversation to a cohere-styled prompt.
+    # Converts a conversation to a cohere-styled prompt.
     def create_prompt(self, user_id: int, conversation: list): 
         # reset the prompt for the current user_id
         self.prompt[user_id] = f"Respond to a message\n{self.stop_seq[0]}\n" 
@@ -29,12 +29,7 @@ class Model:
             if author == "bot":
                 self.prompt[user_id] += f"{self.stop_seq[0]}\n"
 
-        # self.prompt[user_id] += f"{self.stop_seq[0]}\n"
         self.prompt[user_id] += f"bot:"
-        
-
-        # print(user_id, "conversation is:")
-        # print("\n\n", self.prompt[user_id])
     
     def generate_response(self, user_id: int):
         response = ""
@@ -57,14 +52,13 @@ class Model:
 
             # ignores extra output
             response = response.replace(self.stop_seq[0], '').strip().split('\n')[0]
-        except cohere.CohereError as e:
+        except cohere.CohereError as err:
             # blocked output
-            print(e.message)
-            if e.message.startswith("blocked output"):
+            print(err.message)
+            if err.message.startswith("blocked output"):
                 response = "That seems pretty rude..."
                 appropriate = False
                 print("Violation occured")
-                # print(self.prompt[user_id])
             else:
                 response = "An error occured, please try again later."
 

@@ -38,14 +38,14 @@ class FriendBot(discord.Client):
     # Runs when the bot is fully connected to Discord
     async def on_ready(self) -> None:
         activity = discord.Game(
-            name = "Getting coded!",
+            name = "Making friends!",
             start = datetime.datetime.now()
         )
         await self.change_presence(
             status = discord.Status.online,
             activity = activity
         )
-        print("Bot is online")
+        print("Bot is online @ " + str(datetime.datetime.now()))
 
     # Runs when a new message is sent
     async def on_message(self, message) -> None:
@@ -56,13 +56,13 @@ class FriendBot(discord.Client):
         # Prevent bot from responding to itself and other bots
         if user.bot:
             return
+        # Ignore banned users
         elif self.get_strikes(str(user.id)) > STRIKES_MAX: 
-            # ignores anyone banned
             if (text.startswith("!reset") or text.startswith("!consent") or text.startswith("!end") or text.startswith("!conversation")) and random.randint(1,CHANCE_OF_REACTION) == 1:
                 await ctx.send(f"{user.mention}, I'm ignoring rude ppl smh 🙄")
             return
-
         if text.startswith("!consent"):
+            # Ask for user's consent
             if not (self.is_consented(user.id)):
                 embed = discord.Embed(title = "Consent to using Friend Bot", type = "rich", description = "I only make friends with people who consent to my terms and services! They're pretty simple though.\n\n**1.** You consent to having your messages saved and sent to Discord, Cohere, and me (the bot) \n\n**2.** Your behaviour follows the guidelines of both [Discord](https://discord.com/terms) and [Cohere](https://cohere.ai/terms-of-use).\n\n**3.** You will have fun with this bot!", url = "https://github.com/Previouslynamedjeff/friend-bot", timestamp = datetime.datetime.now(), colour = discord.Colour.gold())
                 embed.set_thumbnail(url = self.user.avatar_url)
@@ -72,7 +72,7 @@ class FriendBot(discord.Client):
                 await consentmessage.add_reaction('✅')
             else:
                 embed = discord.Embed(type = "rich", description = "You've already consented! Start a conversation using **`!conversation`**", url = "https://github.com/Previouslynamedjeff/friend-bot", timestamp = datetime.datetime.now(), colour = discord.Colour.red())
-                embed.set_footer(icon_url = self.user.avatar_url)
+                embed.set_footer(text = "Start chatting to me :)", icon_url = self.user.avatar_url)
                 await ctx.send(user.mention, embed = embed)
         # Checks if the user has consented to the usage of the bot yet or if the user has been banned
         if (text.startswith("!conversation") or text.startswith("!reset") or text.startswith("!regenerate") or text.startswith("!end")) and not self.is_consented(user.id):
@@ -82,7 +82,7 @@ class FriendBot(discord.Client):
             return
 
         if user in self.is_messaging:
-            # reset the convo
+            # Reset the conversation history
             if text.startswith("!reset"):
                 self.history[user.id].reset()
                 await ctx.send("Successfully reset your cache")
@@ -104,7 +104,6 @@ class FriendBot(discord.Client):
                     self.history[user.id].add(response.strip(), True, bot_message.id)
 
                     if not appropriate:
-                        # add a strike
                         self.add_strike(user.id) 
             
                     self.last_command = time.time()
@@ -114,12 +113,16 @@ class FriendBot(discord.Client):
                 return
             elif text.startswith("!end"):
                 self.is_messaging.remove(user)
-                await ctx.send(f"Ending conversation with {user.name}")
+                embed = discord.Embed(title = "Bye!", type = "rich", description = f"Ending conversation with {user.mention}", url = "https://github.com/Previouslynamedjeff/friend-bot", timestamp = datetime.datetime.now(), colour = discord.Colour.gold())
+                embed.set_footer(text = "Hope to chat with you again! 👋", icon_url = self.user.avatar_url)
+                await ctx.send(user.mention, embed = embed)
                 return
         elif text.startswith("!conversation"):
             self.is_messaging.add(user)
             self.history[user.id] = history.History(user.name)
-            await ctx.send(f"Beginning conversation with {user.name}")
+            embed = discord.Embed(title = "Hello!", type = "rich", description = f"Starting conversation with {user.mention} 😊", url = "https://github.com/Previouslynamedjeff/friend-bot", timestamp = datetime.datetime.now(), colour = discord.Colour.green())
+            embed.set_footer(text = "Enjoy!", icon_url = self.user.avatar_url)
+            await ctx.send(user.mention, embed = embed)
             return
         else:
             return
@@ -132,17 +135,21 @@ class FriendBot(discord.Client):
             
         # Ignore empty messages
         if len(text) <= 0:
-            await ctx.send("Not responding to this message, I can only read text, your message has none 😡")
+            embed = discord.Embed(title = "Invalid Message", type = "rich", description = "Not responding to this message, I can only read text, your message has none 😡", url = "https://github.com/Previouslynamedjeff/friend-bot", timestamp = datetime.datetime.now(), colour = discord.Colour.red())
+            embed.set_footer(text = "You probably sent an image or a video, we can't read those!", icon_url = self.user.avatar_url)
+            await ctx.send(user.mention, embed = embed)
         # Ignore messages above MESSAGE_LEN_MAX length (too long for our budget)
         if len(text) > MESSAGE_LEN_MAX:
-            await ctx.send(f"The message was too long, so we decided to ignore you (we don't have infinite $$$ you know ...). Please send a text below {MESSAGE_LEN_MAX} characters (tweet length)")
+            embed = discord.Embed(title = "Invalid Message", type = "rich", description = "The message was too long, so we decided to ignore you (we don't have infinite $$$ you know ...)\nTry sending something shorter than a Twitter post", url = "https://github.com/Previouslynamedjeff/friend-bot", timestamp = datetime.datetime.now(), colour = discord.Colour.red())
+            embed.set_footer(text = f"Please send a text below {MESSAGE_LEN_MAX} characters", icon_url = self.user.avatar_url)
+            await ctx.send(user.mention, embed = embed)
             return
         elif time.time() - self.last_command < MESSAGE_WAIT:
             # later update it so that messages sent during the two second duration is compressed into one
-            await ctx.send(f"Please wait {MESSAGE_WAIT} seconds between messages")
+            embed = discord.Embed(title = "Too fast!", type = "rich", description = f"Please wait {MESSAGE_WAIT} seconds between messages", url = "https://github.com/Previouslynamedjeff/friend-bot", timestamp = datetime.datetime.now(), colour = discord.Colour.red())
+            embed.set_footer(text = "Slow down!", icon_url = self.user.avatar_url)
+            await ctx.send(user.mention, embed = embed)
             return
-        
-
         async with ctx.typing():
             # Alerts the console that a message has been sent
             self.history[user.id].add(text)
@@ -168,8 +175,9 @@ class FriendBot(discord.Client):
                 if reaction.emoji == '✅':
                     print("reaction")
                     self.write_consented(user.id)
-                    embed = discord.Embed(title = "Checkmark!", type = "rich", description = user.mention + ", you've consented to be my friend! 😀")
-                    await reaction.message.channel.send(user.mention + " checkmark!")
+                    embed = discord.Embed(title = "Checkmark!", type = "rich", description = user.mention + ", you've consented to be my friend! 😀", url = "https://github.com/Previouslynamedjeff/friend-bot", timestamp = datetime.datetime.now(), colour = discord.Colour.green())
+                    embed.set_footer(text = "Start your first conversation with !conversation", icon_url = self.user.avatar_url)
+                    await reaction.message.channel.send(user.mention, embed = embed)
 
                     
     # Returns true or false depending on whether the function writes successfully
