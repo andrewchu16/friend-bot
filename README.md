@@ -2,9 +2,9 @@
 
 ## Introduction
 
-Have you ever been up on Discord at night, feeling lonely? ~~This is a common issue that has beening affecting our developers. :)~~
+Have you ever been up on Discord at night, feeling lonely? ~~This is a common issue that has been affecting our developers. :)~~
 
-Look no further, for `Friend Bot`! Friend bot is discord bot AI meant to talk like a normal person and respond to your messages! 
+Look no further, for `Friend Bot`! Friend bot is a Cohere-powered discord bot AI meant to talk like a normal person and respond to your messages! 
 With Friend Bot, you will always have a companion to talk to, and you'll never be lonely again!
 
 ![The power of friendship!](https://cdn.discordapp.com/attachments/817583958861807632/962411330613157918/Screen_Shot_2022-04-09_at_1.58.55_PM.png)
@@ -16,6 +16,7 @@ The prefix for Friend Bot is `!`
 
 | Command | Description |
 | --- | --- |
+| `help` | Ask the bot how you would go about using it. |
 | `consent` | Consent to use the bot. Some messages are stored and used in prompts to Cohere, which we wanted the users to know. |
 | `conversation` | Start a conversation with the bot. |
 | `regenerate` | Regenerate the bot's last response with same cache. Maybe you're not happy with what the bot said, or you want a different storyline. |
