@@ -56,11 +56,20 @@ class FriendBot(discord.Client):
         # Prevent bot from responding to itself and other bots
         if user.bot:
             return
+        
+
+        if text.startswith("!help"):
+            embed = discord.Embed(title = "Helping out a friend!", type = "rich", description = "**!help** - A bit of help for when you're in need!\n\n**!consent** - Consent to use the bot. Some messages are stored and used in prompts to Cohere, which we wanted the users to know.\n\n**!conversation** - Start a conversation with the bot.\n\n**!end** - End a conversation with the bot.\n\n**!reset** - Resets the user's conversation cache.\n\n**!regenerate** - Regenerate the bot's last response with same cache. Maybe you're not happy with what the bot said, or you want a different storyline.\n", url = "https://github.com/Previouslynamedjeff/friend-bot", timestamp = datetime.datetime.now(), colour = discord.Colour.blue())
+            embed.set_footer(text="Learning about commands", icon_url = self.user.avatar_url)
+            await ctx.send(user.mention, embed=embed)
+            
         # Ignore banned users
         elif self.get_strikes(str(user.id)) > STRIKES_MAX: 
             if (text.startswith("!reset") or text.startswith("!consent") or text.startswith("!end") or text.startswith("!conversation")) and random.randint(1,CHANCE_OF_REACTION) == 1:
                 await ctx.send(f"{user.mention}, I'm ignoring rude ppl smh 🙄")
             return
+        
+        
         if text.startswith("!consent"):
             # Ask for user's consent
             if not (self.is_consented(user.id)):
