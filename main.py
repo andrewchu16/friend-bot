@@ -1,7 +1,6 @@
 import os
 import friendbot
 
-
 # The Discord bot token
 disc_token = os.environ['discord_token']
 # The Cohere API token

@@ -31,7 +31,7 @@ class Model:
 
         self.prompt[user_id] += f"bot:"
     
-    def generate_response(self, user_id: int):
+    def generate_response(self, user_id: int) -> tuple:
         response = ""
         appropriate = True
         
