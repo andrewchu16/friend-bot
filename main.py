@@ -1,13 +1,15 @@
-import friendbot
 import os
 
-#disc_token = os.environ['discord-token']
-#cohere_token = os.environ['cohere-token']
+import friendbot
+
+
+disc_token = os.environ['discord_token']
+cohere_token = os.environ['cohere_token']
 
 def main():
-    bot = friendbot.FriendBot()
-    bot.run("OTYyMTE1NDU5MzkyNjMwODU0.YlC12A.0NOoRpsK7DMOkxQnYXPpvan3ry8")
-
+    bot = friendbot.FriendBot(cohere_token)
+    bot.run(disc_token)
+    # a.run(cohere_token) shouldnt we first test a.py
     
 
 if __name__ == '__main__':
